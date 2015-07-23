@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var requestHandler = require('../web/request-handler');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,13 +26,25 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(res){
+  fs.readFile(exports.paths.list, "utf8", function(err, content) {
+    if(err) {
+      requestHandler.sendResponse(res, err.message, 404);
+    } else {
+      return content;
+    }
+  })
 };
 
 exports.isUrlInList = function(){
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(res, body){
+  var writeStream = fs.createWriteStream(exports.paths.list,  {'flags': 'a'});
+  console.log("addUrlToList", body);
+  writeStream.write(body);
+  writeStream.end();
+
 };
 
 exports.isUrlArchived = function(){
