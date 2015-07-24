@@ -23,10 +23,17 @@ var actions = {
 
     });
     req.on('end', function(){
-      data = JSON.parse(body);
+      //QS -> URL=www.google.com
+      //JSON.stringify -> "{"URL" ":" "wwww.google.com" "}"
+      data = qs.parse(body);
+      if(data.url === undefined){
+        data = JSON.parse(body);
+      }
       console.log("post: ", data);
+      fs.readFile( archive.paths.archivedSites + '/' + data.url, function(err, content) {
+        sendResponse(res, content, 302);
+      })
       archive.addUrlToList(data.url + "\n", function(){});
-      sendResponse(res, data.url, 302);
     });
   } 
 };

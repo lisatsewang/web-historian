@@ -5,3 +5,4 @@ var archiveHelpers = require('../helpers/archive-helpers');
 archiveHelpers.readListOfUrls(function(urlArray){
   archiveHelpers.downloadUrls(urlArray);  
 });
+

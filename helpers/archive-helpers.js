@@ -52,19 +52,26 @@ exports.isUrlArchived = function(url, callback){
   })
 };
 
-exports.downloadUrls = function(urlArray){
+// exports.downloadUrls = function(urlArray){
+//   for (var i = 0; i < urlArray.length; i++) {
+//     var file = fs.createWriteStream(paths.archivedSites  + "/" + urlArray[i]);
+//     var request = httpRequest.get(urlArray[i], function(response) {
+//       response.pipe(file);
+//     });
+//   }
 
-  for (var i = 0; i < urlArray.length; i++) {
-    var file = fs.createWriteStream(paths.archivedSites + "/" + urlArray[i]);
-    var request = httpRequest.get(urlArray[i], function(response) {
-      response.pipe(file);
+// };
+
+
+exports.downloadUrls = function(list) {
+  list.forEach(function(url){
+    exports.isUrlArchived(url, function(exists){
+      if(!exists) {
+        httpRequest.get({url: url}, path.join(exports.paths.archivedSites, url), function() {});
+      }
     });
-  }
-
+  });
 };
-
-
-
 
 // var file = fs.createWriteStream("file.jpg");
 // var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {

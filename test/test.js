@@ -47,7 +47,7 @@ describe("server", function() {
         request.get('/arglebargle').expect(404, done);
       });
     });
-  bbbbbbb
+
     describe("POST", function () {
       it("should append submitted sites to 'sites.txt'", function(done) {
         var url = "www.example.com";
