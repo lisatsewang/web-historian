@@ -25,7 +25,7 @@ var actions = {
     req.on('end', function(){
       data = JSON.parse(body);
       console.log("post: ", data);
-      archive.addUrlToList(res, data.url + "\n");
+      archive.addUrlToList(data.url + "\n", function(){});
       sendResponse(res, data.url, 302);
     });
   } 

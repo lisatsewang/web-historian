@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var requestHandler = require('../web/request-handler');
+var httpRequest = require('http-request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -10,7 +11,7 @@ var requestHandler = require('../web/request-handler');
  * customize it in any way you wish.
  */
 
-exports.paths = {
+exports.paths = paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
   list: path.join(__dirname, '../archives/sites.txt')
@@ -26,29 +27,53 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(res){
+exports.readListOfUrls = readListOfUrls = function(callback){
   fs.readFile(exports.paths.list, "utf8", function(err, content) {
-    if(err) {
-      requestHandler.sendResponse(res, err.message, 404);
-    } else {
-      return content;
-    }
+    callback(content.split('\n'));
   })
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = isUrlInList = function(url, callback){
+  var existUrlArray = readListOfUrls(function(array) {
+    callback(array.indexOf(url) !== -1);
+  });
 };
 
-exports.addUrlToList = function(res, body){
+exports.addUrlToList = function(url, callback){
   var writeStream = fs.createWriteStream(exports.paths.list,  {'flags': 'a'});
-  console.log("addUrlToList", body);
-  writeStream.write(body);
+  writeStream.write(url);
   writeStream.end();
+  callback();
+};
+
+exports.isUrlArchived = function(url, callback){
+  fs.readdir(paths.archivedSites, function(err, files){
+    callback(files.indexOf(url) !== -1);
+  })
+};
+
+exports.downloadUrls = function(urlArray){
+
+  for (var i = 0; i < urlArray.length; i++) {
+    var file = fs.createWriteStream(paths.archivedSites + "/" + urlArray[i]);
+    var request = httpRequest.get(urlArray[i], function(response) {
+      response.pipe(file);
+    });
+  }
 
 };
 
-exports.isUrlArchived = function(){
-};
 
-exports.downloadUrls = function(){
-};
+
+
+// var file = fs.createWriteStream("file.jpg");
+// var request = http.get("http://i3.ytimg.com/vi/J---aiyznGQ/mqdefault.jpg", function(response) {
+//   response.pipe(file);
+// });
+
+
+
+
+
+
+
